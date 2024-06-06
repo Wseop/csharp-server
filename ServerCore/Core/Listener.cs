@@ -28,7 +28,7 @@ namespace ServerCore.Core
             RegisterAccept(listenArgs);
         }
 
-        public void RegisterAccept(SocketAsyncEventArgs listenArgs)
+        void RegisterAccept(SocketAsyncEventArgs listenArgs)
         {
             // args 재사용을 위한 값 초기화
             listenArgs.AcceptSocket = null;
@@ -40,7 +40,7 @@ namespace ServerCore.Core
             }
         }
 
-        public void OnAcceptCompleted(object sender, SocketAsyncEventArgs listenArgs) 
+        void OnAcceptCompleted(object sender, SocketAsyncEventArgs listenArgs) 
         {
             if (listenArgs.SocketError == SocketError.Success)
             {

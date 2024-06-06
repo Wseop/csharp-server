@@ -30,7 +30,7 @@
         }
 
         // 사용가능한 ArraySegment를 반환
-        public ArraySegment<byte> FreeSegment()
+        public ArraySegment<byte> BufferSegment()
         {
             return _buffer.Slice(_writePos, FreeSize());
         }

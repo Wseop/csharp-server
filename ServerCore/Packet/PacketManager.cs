@@ -14,11 +14,11 @@ namespace ServerCore.Packet
         public static PacketManager Instance { get; } = new PacketManager();
         public ushort HeaderSize { get; } = sizeof(ushort) + sizeof(ushort);
 
-        private Action<Session, ArraySegment<byte>>[] _packetHandlers = new Action<Session, ArraySegment<byte>>[ushort.MaxValue];
+        private Action<Session, MemoryStream>[] _packetHandlers = new Action<Session, MemoryStream>[ushort.MaxValue];
 
         private PacketManager() { }
 
-        public void AddHandler(EPacketType packetType, Action<Session, ArraySegment<byte>> handler)
+        public void AddHandler(EPacketType packetType, Action<Session, MemoryStream> handler)
         {
             _packetHandlers[(ushort)packetType] = handler;
         }
@@ -69,7 +69,8 @@ namespace ServerCore.Packet
                 return 0;
 
             // PacketType에 해당하는 Handler 호출. Payload 부분만 전달.
-            _packetHandlers[packetHeader.packetType](session, packet.Slice(offset, packetHeader.packetSize - HeaderSize));
+            MemoryStream payloadStream = new MemoryStream(packet.Array, packet.Offset + offset, packetHeader.packetSize - HeaderSize);
+            _packetHandlers[packetHeader.packetType](session, payloadStream);
 
             return packetHeader.packetSize;
         }

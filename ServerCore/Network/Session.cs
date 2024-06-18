@@ -1,4 +1,5 @@
 ﻿using ServerCore.Buffer;
+using ServerCore.Packet;
 using System.Net.Sockets;
 
 namespace ServerCore.Network
@@ -206,5 +207,33 @@ namespace ServerCore.Network
                 }
             }
         }
+    }
+
+    public class PacketSession : Session
+    {
+        public PacketSession(Socket socket) : base(socket) 
+        { }
+
+        protected override void OnDisconnect()
+        { }
+
+        protected sealed override int OnRecv(ArraySegment<byte> buffer)
+        {
+            int bytesProcessed = 0;
+
+            while (true)
+            {
+                int packetSize = PacketManager.Instance.ProcessPacket(this, buffer.Slice(bytesProcessed));
+                if (packetSize == 0)
+                    break;
+
+                bytesProcessed += packetSize;
+            }
+
+            return bytesProcessed;
+        }
+
+        protected override void OnSend(int bytesTransferred)
+        { }
     }
 }

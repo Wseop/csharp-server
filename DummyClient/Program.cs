@@ -1,4 +1,6 @@
 ﻿using ServerCore.Core;
+using ServerCore.Network;
+using ServerCore.Packet;
 using System.Net;
 
 namespace DummyClient
@@ -12,10 +14,26 @@ namespace DummyClient
             IPAddress ipAddress = hostEntry.AddressList[0];
             IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, 7777);
 
-            Connector connector = new Connector((socket) => { Console.WriteLine("Connected to Server."); });
+            PacketSession session = null;
+
+            Connector connector = new Connector((socket) => {
+                session = new PacketSession(socket);
+                session.Start();
+            });
             connector.Connect(ipEndPoint);
 
-            while (true) ;
+            int count = 0;
+
+            while (true)
+            {
+                if (session == null)
+                    continue;
+
+                ArraySegment<byte> packetTest = ClientPacketHandler.Instance.MakeTest($"Test Message {count++}");
+                session.Send(packetTest);
+
+                Thread.Sleep(1000);
+            }
         }
     }
 }

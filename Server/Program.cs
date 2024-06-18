@@ -1,4 +1,5 @@
 ﻿using ServerCore.Core;
+using ServerCore.Network;
 using System.Net;
 
 namespace Server
@@ -12,8 +13,13 @@ namespace Server
             IPAddress ipAddress = hostEntry.AddressList[0];
             IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, 7777);
 
-            Listener listener = new Listener(ipEndPoint, (socket) => { Console.WriteLine("Client Connected."); });
+            Listener listener = new Listener(ipEndPoint, (socket) => {
+                PacketSession session = SessionManager.Instance.CreateSession(socket);
+                session.Start();
+            });
             listener.StartAccept();
+
+            ServerPacketHandler.Instance.MakeTest("init");
 
             while (true) ;
         }

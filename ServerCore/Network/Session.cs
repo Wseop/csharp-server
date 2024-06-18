@@ -17,6 +17,8 @@ namespace ServerCore.Network
         Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>();
         SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs();
 
+        public int SessionId { get; set; }
+
         public Session(Socket socket)
         {
             _socket = socket;

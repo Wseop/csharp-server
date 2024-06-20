@@ -14,11 +14,11 @@ namespace ServerCore.Packet
         public static PacketManager Instance { get; } = new PacketManager();
         public ushort HeaderSize { get; } = sizeof(ushort) + sizeof(ushort);
 
-        private Action<Session, MemoryStream>[] _packetHandlers = new Action<Session, MemoryStream>[ushort.MaxValue];
+        private Action<PacketSession, MemoryStream>[] _packetHandlers = new Action<PacketSession, MemoryStream>[ushort.MaxValue];
 
         private PacketManager() { }
 
-        public void AddHandler(EPacketType packetType, Action<Session, MemoryStream> handler)
+        public void AddHandler(EPacketType packetType, Action<PacketSession, MemoryStream> handler)
         {
             _packetHandlers[(ushort)packetType] = handler;
         }
@@ -49,7 +49,7 @@ namespace ServerCore.Packet
             return sendBuffer;
         }
 
-        public int ProcessPacket(Session session, ArraySegment<byte> packet)
+        public int ProcessPacket(PacketSession session, ArraySegment<byte> packet)
         {
             // PacketHeader Parsing이 가능한 크기인지 체크
             if (packet.Count < HeaderSize)

@@ -27,7 +27,7 @@
             }
         }
 
-        public void Execute()
+        private void Execute()
         {
             while (true)
             {

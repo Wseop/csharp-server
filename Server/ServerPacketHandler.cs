@@ -8,24 +8,40 @@ namespace Server
         public static ServerPacketHandler Instance { get; } = new ServerPacketHandler();
 
         private ServerPacketHandler() 
+        { }
+
+        public void Init()
         {
-            PacketManager.Instance.AddHandler(EPacketType.Test, HandleTest);
+            PacketManager.Instance.AddHandler(EPacketType.C_Enter, HandleC_Enter);
+            PacketManager.Instance.AddHandler(EPacketType.C_Exit, HandleC_Exit);
         }
 
-        public ArraySegment<byte> MakeTest(string msg)
+        public ArraySegment<byte> MakeS_Enter(bool success)
         {
-            PacketTest packetTest = new PacketTest();
-            packetTest.Msg = msg;
+            PacketS_Enter sEnter = new PacketS_Enter();
+            sEnter.Success = success;
 
-            return PacketManager.Instance.MakePacket(EPacketType.Test, packetTest);
+            return PacketManager.Instance.MakePacket(EPacketType.S_Enter, sEnter);
         }
 
-        private void HandleTest(Session session, MemoryStream payloadStream)
+        private void HandleC_Enter(PacketSession session, MemoryStream payloadStream)
         {
-            PacketTest packetTest = ProtoBuf.Serializer.Deserialize<PacketTest>(payloadStream);
+            PacketC_Enter cEnter = ProtoBuf.Serializer.Deserialize<PacketC_Enter>(payloadStream);
+            Room.Instance.Enter(cEnter.Name, session);
+        }
 
-            ArraySegment<byte> reply = MakeTest(packetTest.Msg);
-            session.Send(reply);
+        public ArraySegment<byte> MakeS_Exit(bool success)
+        {
+            PacketS_Exit sExit = new PacketS_Exit();
+            sExit.Success = success;
+
+            return PacketManager.Instance.MakePacket(EPacketType.S_Exit, sExit);
+        }
+
+        private void HandleC_Exit(PacketSession session, MemoryStream payloadStream)
+        {
+            PacketC_Exit cExit = ProtoBuf.Serializer.Deserialize<PacketC_Exit>(payloadStream);
+            Room.Instance.Exit(cExit.Name, session);
         }
     }
 }

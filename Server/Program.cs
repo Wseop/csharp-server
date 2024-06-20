@@ -8,6 +8,8 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            ServerPacketHandler.Instance.Init();
+
             string host = Dns.GetHostName();
             IPHostEntry hostEntry = Dns.GetHostEntry(host);
             IPAddress ipAddress = hostEntry.AddressList[0];
@@ -18,8 +20,6 @@ namespace Server
                 session.Start();
             });
             listener.StartAccept();
-
-            ServerPacketHandler.Instance.MakeTest("init");
 
             while (true) ;
         }
